@@ -3,7 +3,15 @@ use std::env;
 use minigrep::{Config,run};
   fn main() {
     let args : Vec<String>= env::args().collect();
-    let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+    let case_sensitive =match  env::var("CASE_INSENSITIVE") {
+        Err(_) => {
+            false
+        },
+        Ok(val) => {
+           val.parse().unwrap_or(false)
+        }
+    }; 
+    
     let config:Config =Config::new(&args,case_sensitive).unwrap_or_else(|err|{
         eprintln!("Problem parsing arguments: {}",err);
         process::exit(1);
