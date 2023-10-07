@@ -1,6 +1,6 @@
  use std::fs;
  use std::error::Error;
-   use std::path::PathBuf;
+use anyhow::Result;
 
 use clap::{Parser};
 
@@ -32,7 +32,8 @@ pub fn run ()->Result<(),Box<dyn Error>>{
     
     let results = match args.case_sensitive {
         Some(true) =>  search(&args.query, &contents),
-        Some(false) => search_case_sensitive(&args.query, &contents),        None => search(&args.query, &contents),
+        Some(false) => search_case_sensitive(&args.query, &contents), 
+        None => search(&args.query, &contents),
     }; 
     for line in results{
         println!("{}",line);
