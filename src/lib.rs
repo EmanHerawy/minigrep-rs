@@ -1,12 +1,39 @@
  use std::fs;
  use std::error::Error;
-pub fn run (config:Config)->Result<(),Box<dyn Error>>{
-    let contents = fs::read_to_string(config.filename)?;
+   use std::path::PathBuf;
+
+use clap::{Parser};
+
+
+
+
+  
+#[derive(Debug,Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+
+    /// your query string
+     #[arg(short, long, value_name = "Query")]
+    query: String,
+
+    /// Sets a custom config file
+    #[arg(short, long, value_name = "FILE")]
+    filename: String,
+
+    /// Is case sensitive search, false by default
+    #[arg(short, long)]
+    case_sensitive: Option<bool>,
+}
+
+
+pub fn run ()->Result<(),Box<dyn Error>>{
+     let args = Cli::parse();
+    let contents = fs::read_to_string(args.filename)?;
     
-    let results = if config.case_sensitive{
-        search(&config.query,&contents)}else {
-            search_case_sensitive(&config.query,&contents)
-        };
+    let results = match args.case_sensitive {
+        Some(true) =>  search(&args.query, &contents),
+        Some(false) => search_case_sensitive(&args.query, &contents),        None => search(&args.query, &contents),
+    }; 
     for line in results{
         println!("{}",line);
     }
